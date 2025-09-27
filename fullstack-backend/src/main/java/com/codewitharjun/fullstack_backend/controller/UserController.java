@@ -30,12 +30,5 @@ public class UserController {
         return userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException(id));
     }
-
     
-
-
-
-    
-
-
 }
