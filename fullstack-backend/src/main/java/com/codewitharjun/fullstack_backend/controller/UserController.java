@@ -1,12 +1,15 @@
 package com.codewitharjun.fullstack_backend.controller;
 
 import com.codewitharjun.fullstack_backend.exception.UserNotFoundException;
+import com.codewitharjun.fullstack_backend.model.Roles;
 import com.codewitharjun.fullstack_backend.model.User;
+import com.codewitharjun.fullstack_backend.repository.RolesRepository;
 import com.codewitharjun.fullstack_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin("http://localhost:3000/")
@@ -14,9 +17,14 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RolesRepository rolesRepository;
 
     @PostMapping("/user")
     User newUser(@RequestBody User newUser){
+        Roles userRole = rolesRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        newUser.setRoles(Set.of(userRole));
         return userRepository.save(newUser);
     }
 
