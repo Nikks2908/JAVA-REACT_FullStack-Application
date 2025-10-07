@@ -11,13 +11,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // disable CSRF for APIs
+                // Disable CSRF for simplicity (optional)
+                .csrf(csrf -> csrf.disable())
+                // Authorize all requests
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasRole("ADMIN")  // only admin
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // both user + admin
-                        .anyRequest().permitAll() // allow everything else for now
+                        .anyRequest().permitAll()
                 )
-                .httpBasic(); // simple basic auth (you can replace with JWT later)
+                // Disable default login form
+                .formLogin(form -> form.disable())
+                .httpBasic(httpBasic -> httpBasic.disable());
+
         return http.build();
     }
 }
