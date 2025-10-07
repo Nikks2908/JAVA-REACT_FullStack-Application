@@ -8,8 +8,7 @@ import com.codewitharjun.fullstack_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @CrossOrigin("http://localhost:3000/")
@@ -59,5 +58,33 @@ public class UserController {
                     return user;
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+    }
+
+    @PostMapping("/login")
+    public Map<String, Object> login(@RequestBody Map<String, String> loginRequest) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        Optional<User> userOpt = userRepository.findByUsername(username);
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            // For now: plain text password check (⚠️ not secure, should use BCrypt in production)
+            if (user.getPassword().equals(password)) {
+                response.put("status", "success");
+                response.put("message", "Login successful");
+                response.put("user", user);
+            } else {
+                response.put("status", "error");
+                response.put("message", "Invalid password");
+            }
+        } else {
+            response.put("status", "error");
+            response.put("message", "User not found");
+        }
+
+        return response;
     }
 }
